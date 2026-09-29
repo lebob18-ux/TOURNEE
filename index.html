@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101b26">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Tournée">
+<title>Tournée de proximité</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<script src="jspdf.umd.min.js"></script>
+<style>
+:root{--bg:#101b26;--card:#182838;--in:#0e1822;--line:#2a4055;--tx:#eef3f7;--mut:#93a8ba;--ac:#ffc21a;--ok:#2ea44f;--wa:#f0a020;--ko:#e5484d;box-sizing:border-box}
+*{box-sizing:inherit;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--tx);font:400 16px/1.4 Barlow,system-ui,sans-serif}
+body{padding:env(safe-area-inset-top) 0 calc(76px + env(safe-area-inset-bottom))}
+h1,h2,b,nav button,.seg button,.main{font-family:"Barlow Semi Condensed",system-ui,sans-serif}
+header{padding:18px 16px 0;max-width:640px;margin:auto}
+h1{font-size:28px;line-height:1.05;margin:0;font-weight:700}
+header small{color:var(--mut)}
+.track{height:14px;margin:12px 0 4px;background:
+ linear-gradient(var(--ac),var(--ac)) 0 3px/100% 2px no-repeat,
+ linear-gradient(var(--ac),var(--ac)) 0 9px/100% 2px no-repeat,
+ repeating-linear-gradient(90deg,var(--line) 0 4px,transparent 4px 14px);opacity:.9}
+.inst{margin-top:10px;background:var(--ac);color:#111;border:0;border-radius:8px;padding:9px 14px;font:700 16px "Barlow Semi Condensed",system-ui,sans-serif}
+main{max-width:640px;margin:auto;padding:8px 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin:12px 0}
+h2{font-size:20px;margin:0 0 10px;font-weight:600}
+.f{display:block;margin:0 0 10px}
+.f span,.lbl{display:block;font-size:13px;color:var(--mut);margin:0 0 3px}
+input,select,textarea{width:100%;font:inherit;color:var(--tx);background:var(--in);border:1px solid var(--line);border-radius:8px;padding:10px;min-height:44px}
+textarea{resize:vertical}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+.row{display:flex;gap:8px}.row>*{flex:1;min-width:0}
+.pr{margin-bottom:8px}.pr input:first-child{flex:.8}
+.x{flex:0 0 44px!important;background:none;border:1px solid var(--line);color:var(--mut);border-radius:8px;font-size:16px}
+button{font:inherit;cursor:pointer}
+.ghost{display:block;width:100%;text-align:center;background:none;border:1px dashed var(--line);color:var(--tx);border-radius:8px;padding:11px;margin-top:8px}
+.dng{color:var(--ko);border-color:var(--ko)}
+.main{display:block;width:100%;margin:14px 0 8px;padding:15px;border:0;border-radius:10px;background:var(--ac);color:#111;font-size:19px;font-weight:700}
+.pt{border-left:6px solid var(--c)}
+.ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.ph b{font-size:22px}.ph button{background:none;border:0;color:var(--mut);text-decoration:underline}
+.seg{display:flex;gap:6px;margin:0 0 10px}
+.seg button{flex:1;padding:10px 4px;border-radius:8px;border:1px solid var(--line);background:var(--in);color:var(--mut);font-size:15px;font-weight:600}
+.seg .on{color:#fff;border-color:transparent}
+.seg .ok.on{background:var(--ok)}.seg .wa.on{background:var(--wa);color:#111}.seg .ko.on{background:var(--ko)}
+.thumb{display:block;width:100%;max-height:260px;object-fit:cover;border-radius:8px;margin-top:4px}
+.cam{cursor:pointer}
+.stats{display:flex;gap:8px}
+.stats div{flex:1;text-align:center;padding:10px 4px;border-radius:8px;border-bottom:4px solid var(--c);background:var(--in)}
+.stats b{display:block;font-size:32px;line-height:1}.stats span{font-size:13px;color:var(--mut)}
+.sgp{display:block;width:100%;height:110px;object-fit:contain;background:#fff;border-radius:8px}
+.sgn{height:70px;display:flex;align-items:center;justify-content:center;border:1px dashed var(--line);border-radius:8px;color:var(--mut)}
+.sgo{position:fixed;inset:0;z-index:20;background:#000d;display:flex;align-items:center;justify-content:center;padding:16px;touch-action:none;overscroll-behavior:contain}
+.sgb{width:100%;max-width:560px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.sgb b{display:block;font-size:20px;margin-bottom:10px}
+.sgb canvas{display:block;width:100%;height:46vh;max-height:320px;background:#fff;border-radius:8px;touch-action:none;margin-bottom:10px}
+.sgb .row>*{margin:0}
+.empty{text-align:center;color:var(--mut);padding:36px 12px}
+.fab{position:fixed;right:16px;bottom:calc(88px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:50%;border:0;background:var(--ac);color:#111;font-size:34px;line-height:1;box-shadow:0 4px 14px #0009}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:#0b141c;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;padding:14px 4px;background:none;border:0;color:var(--mut);font-size:17px;font-weight:600;border-top:3px solid transparent}
+nav .on{color:var(--ac);border-top-color:var(--ac)}
+#toast{position:fixed;left:16px;right:16px;bottom:calc(90px + env(safe-area-inset-bottom));background:#000;color:#fff;padding:12px;border-radius:8px;text-align:center;display:none;z-index:9}
+</style>
+</head>
+<body>
+<header>
+  <h1>Tournée de proximité</h1>
+  <small>Passage post-travaux avec la maintenance · <span id="cnt"></span></small>
+  <button id="inst" class="inst" hidden>Installer l’application</button>
+  <div class="track"></div>
+</header>
+<main id="app"></main>
+<nav>
+  <button data-t="info">Chantier</button>
+  <button data-t="pts">Constats</button>
+  <button data-t="end">Clôture</button>
+</nav>
+<div id="toast"></div>
+
+<script>
+const $=s=>document.querySelector(s),KEY='tp_v1';
+const CATS=['Caténaire','Fouille / blindage','Voie','Talus / remblai','Déblais / propreté','Signalisation','Clôture / accès','Autre'];
+const STS={ok:['Conforme','#2ea44f'],wa:['À surveiller','#f0a020'],ko:['Non conforme','#e5484d']};
+const fresh=()=>({i:{date:new Date().toISOString().slice(0,10)},p:[{}],pts:[],c:'',s1:'',s2:''});
+const load=()=>{try{return JSON.parse(localStorage.getItem(KEY))||fresh()}catch(e){return fresh()}};
+let S=load(),tab='info';
+const E=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fd=s=>s?s.split('-').reverse().join('/'):'';
+function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',3000)}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('Mémoire pleine : exporte le PDF puis démarre une nouvelle tournée')}}
+
+const inp=(k,l,v,t='text')=>`<label class="f"><span>${l}</span><input type="${t}" data-k="${k}" value="${E(v)}"></label>`;
+const ta=(k,l,v)=>`<label class="f"><span>${l}</span><textarea rows="2" data-k="${k}">${E(v)}</textarea></label>`;
+
+function vInfo(){const i=S.i;return `<section class="card"><h2>Chantier</h2>
+${inp('i.chantier','Chantier / opération',i.chantier)}${inp('i.lieu','Ligne / PK / gare',i.lieu)}${inp('i.objet','Nature des travaux',i.objet)}
+<div class="row">${inp('i.date','Date',i.date,'date')}${inp('i.heure','Heure',i.heure,'time')}</div>
+${inp('i.travaux','Responsable travaux',i.travaux)}${inp('i.ee','Entreprise(s)',i.ee)}</section>
+<section class="card"><h2>Représentants maintenance</h2>
+${S.p.map((p,n)=>`<div class="row pr"><input data-k="p.${n}.n" value="${E(p.n)}" placeholder="Nom"><input data-k="p.${n}.s" value="${E(p.s)}" placeholder="Service"><button class="x" data-a="dp" data-n="${n}">✕</button></div>`).join('')}
+<button class="ghost" data-a="ap">+ Ajouter un représentant</button></section>`}
+
+function vPt(p,n){return `<section class="card pt" style="--c:${STS[p.st][1]}">
+<div class="ph"><b>Point ${n+1}</b><button data-a="dpt" data-n="${n}">Supprimer</button></div>
+${inp(`pts.${n}.zone`,'Zone / PK / repère',p.zone)}
+<label class="f"><span>Catégorie</span><select data-k="pts.${n}.cat">${CATS.map(c=>`<option${c==p.cat?' selected':''}>${c}</option>`).join('')}</select></label>
+<div class="seg">${Object.entries(STS).map(([k,[l]])=>`<button class="${p.st==k?'on '+k:k}" data-a="st" data-n="${n}" data-v="${k}">${l}</button>`).join('')}</div>
+${ta(`pts.${n}.desc`,'Constat',p.desc)}${ta(`pts.${n}.act`,'Action à mener',p.act)}
+<div class="row">${inp(`pts.${n}.resp`,'Responsable',p.resp)}${inp(`pts.${n}.ech`,'Échéance',p.ech,'date')}</div>
+${p.ph?`<img class="thumb" src="${p.ph}" alt="Photo du point ${n+1}">`:''}
+<label class="ghost cam">📷 ${p.ph?'Remplacer la photo':'Ajouter une photo'}<input type="file" accept="image/*" hidden data-a="ph" data-n="${n}"></label></section>`}
+
+const vPts=()=>(S.pts.length?S.pts.map(vPt).join(''):'<p class="empty">Aucun constat pour l’instant.<br>Appuie sur + pour ajouter le premier point.</p>')+'<button class="fab" data-a="ap2" aria-label="Ajouter un constat">+</button>';
+
+function vEnd(){const c=k=>S.pts.filter(p=>p.st==k).length;return `<section class="card"><h2>Bilan</h2>
+<div class="stats">${Object.entries(STS).map(([k,[l,col]])=>`<div style="--c:${col}"><b>${c(k)}</b><span>${l}</span></div>`).join('')}</div></section>
+<section class="card"><h2>Conclusion</h2>${ta('c','Suites à donner',S.c)}</section>
+<section class="card"><h2>Signatures</h2>
+${['s1','s2'].map((k,n)=>`<p class="lbl"${n?' style="margin-top:14px"':''}>${n?'Maintenance':'Travaux'}</p>${S[k]?`<img class="sgp" src="${S[k]}" alt="Signature">`:'<div class="sgn">Pas encore signé</div>'}<div class="row"><button class="ghost" data-a="sg" data-v="${k}">${S[k]?'Refaire':'Signer'}</button>${S[k]?`<button class="ghost" data-a="clr" data-v="${k}">Effacer</button>`:''}</div>`).join('')}</section>
+<button class="main" data-a="pdf">Exporter le rapport PDF</button>
+<button class="ghost dng" data-a="rst">Nouvelle tournée (tout effacer)</button>`}
+
+function openSig(id){
+const o=document.createElement('div');o.className='sgo';
+o.innerHTML=`<div class="sgb"><b>Signature ${id=='s1'?'Travaux':'Maintenance'}</b><canvas></canvas><div class="row"><button class="ghost" data-x="c">Effacer</button><button class="ghost" data-x="a">Annuler</button><button class="main" data-x="v">Valider</button></div></div>`;
+document.body.appendChild(o);
+const c=o.querySelector('canvas'),x=c.getContext('2d'),r=c.getBoundingClientRect();
+c.width=r.width*2;c.height=r.height*2;x.scale(2,2);x.lineWidth=2.4;x.lineCap='round';x.lineJoin='round';x.strokeStyle='#111';
+let dr=false,dn=false;const pt=e=>{const b=c.getBoundingClientRect();return[e.clientX-b.left,e.clientY-b.top]};
+c.onpointerdown=e=>{dr=dn=true;c.setPointerCapture(e.pointerId);x.beginPath();x.moveTo(...pt(e))};
+c.onpointermove=e=>{if(dr){x.lineTo(...pt(e));x.stroke()}};
+c.onpointerup=c.onpointercancel=()=>{dr=false};
+o.onclick=e=>{const k=e.target.dataset.x;if(!k)return;
+ if(k=='c'){x.clearRect(0,0,r.width,r.height);dn=false;return}
+ if(k=='v'&&dn){S[id]=c.toDataURL('image/png');save()}
+ o.remove();render()}}
+
+function render(){
+$('#app').innerHTML={info:vInfo,pts:vPts,end:vEnd}[tab]();
+document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t==tab));
+$('#cnt').textContent=S.pts.length+' constat'+(S.pts.length>1?'s':'')}
+
+document.addEventListener('input',e=>{const k=e.target.dataset.k;if(!k)return;const a=k.split('.');let o=S;while(a.length>1)o=o[a.shift()];o[a[0]]=e.target.value;save()});
+
+document.addEventListener('click',e=>{
+const b=e.target.closest('[data-a],[data-t]');if(!b)return;
+if(b.dataset.t){tab=b.dataset.t;render();scrollTo(0,0);return}
+const a=b.dataset.a,n=+b.dataset.n,v=b.dataset.v;
+if(a=='ph')return;
+if(a=='ap')S.p.push({});
+else if(a=='dp'){S.p.splice(n,1);if(!S.p.length)S.p.push({})}
+else if(a=='ap2'){S.pts.push({st:'ok',cat:CATS[0]});save();render();scrollTo(0,document.body.scrollHeight);return}
+else if(a=='dpt'){if(!confirm('Supprimer ce constat ?'))return;S.pts.splice(n,1)}
+else if(a=='st')S.pts[n].st=v;
+else if(a=='sg'){openSig(v);return}
+else if(a=='clr')S[v]='';
+else if(a=='rst'){if(!confirm('Tout effacer et démarrer une nouvelle tournée ?'))return;S=fresh();tab='info';scrollTo(0,0)}
+else if(a=='pdf'){pdf();return}
+save();render()});
+
+document.addEventListener('change',e=>{
+const t=e.target;if(t.dataset.a!='ph'||!t.files[0])return;const n=+t.dataset.n,r=new FileReader();
+r.onload=()=>{const im=new Image();im.onload=()=>{
+const s=Math.min(1,900/Math.max(im.width,im.height)),c=document.createElement('canvas');
+c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+S.pts[n].ph=c.toDataURL('image/jpeg',.6);save();render()};im.src=r.result};
+r.readAsDataURL(t.files[0])});
+
+function pdf(){
+if(!window.jspdf){toast('Bibliothèque PDF non chargée : vérifie la connexion');return}
+const d=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),W=210,M=14,i=S.i;let y=0;
+const rgb=h=>[1,3,5].map(k=>parseInt(h.substr(k,2),16)),fill=h=>d.setFillColor(...rgb(h)),txt=h=>d.setTextColor(...rgb(h));
+const f=(w,s)=>{d.setFont('helvetica',w);d.setFontSize(s)},chk=n=>{if(y+n>280){d.addPage();y=16}};
+const sec=t=>{chk(14);fill('#ffc21a');d.rect(M,y,2.4,6,'F');txt('#101b26');f('bold',12);d.text(t,M+5,y+4.8);y+=11};
+fill('#101b26');d.rect(0,0,W,34,'F');fill('#ffc21a');d.rect(0,34,W,1.6,'F');
+txt('#ffffff');f('bold',20);d.text('Tournée de proximité',M,15);
+f('normal',10);d.text('Compte rendu post-travaux avec la maintenance',M,22);
+d.text(fd(i.date)+(i.heure?' à '+i.heure:''),M,28.5);y=44;
+
+sec('Chantier');
+[['Chantier',i.chantier],['Ligne / PK',i.lieu],['Travaux',i.objet],['Resp. travaux',i.travaux],['Entreprise(s)',i.ee]].forEach(([l,v])=>{
+ if(!v)return;const L=d.splitTextToSize(v,W-2*M-36);chk(L.length*5+2);
+ txt('#5b7189');f('bold',9);d.text(l,M,y);txt('#111111');f('normal',10);d.text(L,M+36,y);y+=L.length*5+1.5});
+const ps=S.p.filter(p=>p.n||p.s);
+if(ps.length){y+=3;sec('Représentants maintenance');ps.forEach(p=>{chk(6);txt('#111111');f('normal',10);d.text((p.n||'-')+(p.s?'  ('+p.s+')':''),M+2,y);y+=5.5})}
+
+y+=3;sec('Bilan : '+S.pts.length+' constat'+(S.pts.length>1?'s':''));
+const bw=(W-2*M-8)/3;Object.entries(STS).forEach(([k,[l,col]],n)=>{
+ const x=M+n*(bw+4),c=S.pts.filter(p=>p.st==k).length;
+ d.setDrawColor(200,208,218);d.roundedRect(x,y,bw,16,2,2,'S');fill(col);d.rect(x,y+13,bw,3,'F');
+ txt('#101b26');f('bold',15);d.text(String(c),x+bw/2,y+8,{align:'center'});txt('#5b7189');f('normal',9);d.text(l,x+bw/2,y+12,{align:'center'})});
+y+=24;
+
+if(S.pts.length)sec('Constats');
+S.pts.forEach((p,n)=>{
+ const [sl,sc]=STS[p.st],tw=p.ph?W-2*M-66:W-2*M-10;
+ const rows=[['Constat',p.desc],['Action',p.act],['Responsable',[p.resp,p.ech&&'échéance '+fd(p.ech)].filter(Boolean).join(' - ')]].filter(r=>r[1]);
+ f('normal',10);const L=[];rows.forEach(([l,v])=>d.splitTextToSize(l+' : '+v,tw).forEach(s=>L.push(s)));
+ let ih=0,iw=0;if(p.ph){const pr=d.getImageProperties(p.ph),s=Math.min(54/pr.width,42/pr.height);iw=pr.width*s;ih=pr.height*s}
+ const h=Math.max(L.length*4.7+15,p.ph?ih+14:0);chk(h+4);
+ d.setDrawColor(200,208,218);d.roundedRect(M,y,W-2*M,h,2,2,'S');fill(sc);d.rect(M,y,2.4,h,'F');
+ txt('#101b26');f('bold',11);d.text((n+1)+'. '+(p.zone||'Point sans repère')+' - '+p.cat,M+6,y+6.5);
+ txt(sc);f('bold',9);d.text(sl,W-M-3,y+6.5,{align:'right'});
+ txt('#111111');f('normal',10);d.text(L,M+6,y+13);
+ if(p.ph)d.addImage(p.ph,'JPEG',W-M-3-iw,y+10,iw,ih);
+ y+=h+4});
+
+sec('Conclusion');
+const C=d.splitTextToSize(S.c||'Aucune remarque complémentaire.',W-2*M-4);
+C.forEach(l=>{chk(5);txt('#111111');f('normal',10);d.text(l,M+2,y);y+=4.8});
+y+=6;chk(48);
+[['Travaux',i.travaux,S.s1],['Maintenance',(S.p[0]||{}).n,S.s2]].forEach(([l,nm,sg],n)=>{
+ const x=M+n*((W-2*M)/2+2),w=(W-2*M)/2-2;
+ d.setDrawColor(200,208,218);d.roundedRect(x,y,w,38,2,2,'S');
+ txt('#5b7189');f('bold',9);d.text(l+(nm?' - '+nm:''),x+3,y+5.5);
+ if(sg)d.addImage(sg,'PNG',x+3,y+8,w-6,28)});
+
+const N=d.getNumberOfPages();
+for(let k=1;k<=N;k++){d.setPage(k);txt('#5b7189');f('normal',8);
+ d.text('Tournée de proximité - '+(i.chantier||'')+' - '+fd(i.date),M,290);d.text('Page '+k+'/'+N,W-M,290,{align:'right'})}
+d.save('Tournee_proximite_'+(i.date||'')+(i.chantier?'_'+i.chantier.replace(/[^\w]+/g,'-'):'')+'.pdf')}
+
+let ip;addEventListener('beforeinstallprompt',e=>{e.preventDefault();ip=e;$('#inst').hidden=false});
+$('#inst').onclick=async()=>{ip.prompt();await ip.userChoice;$('#inst').hidden=true};
+if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+
+render();
+</script>
+</body>
+</html>
