@@ -139,7 +139,7 @@ function vEnd(){const c=k=>S.pts.filter(p=>p.st==k).length;return `<section clas
 <div class="stats">${Object.entries(STS).map(([k,[l,col]])=>`<div style="--c:${col}"><b>${c(k)}</b><span>${l}</span></div>`).join('')}</div></section>
 <section class="card"><h2>Conclusion</h2>${ta('c','Suites à donner',S.c)}</section>
 <section class="card"><h2>Signatures</h2>
-${['s1','s2'].map((k,n)=>`<p class="lbl"${n?' style="margin-top:14px"':''}>${n?'Maintenance':'Travaux'}</p>${S[k]?`<img class="sgp" src="${S[k]}" alt="Signature">`:'<div class="sgn">Pas encore signé</div>'}<div class="row"><button class="ghost" data-a="sg" data-v="${k}">${S[k]?'Refaire':'Signer'}</button>${S[k]?`<button class="ghost" data-a="clr" data-v="${k}">Effacer</button>`:''}</div>`).join('')}</section>
+${['s1','s2'].map((k,n)=>`<p class="lbl"${n?' style="margin-top:14px"':''}>${n?'Maintenance ou EE':'MOETx'}</p>${S[k]?`<img class="sgp" src="${S[k]}" alt="Signature">`:'<div class="sgn">Pas encore signé</div>'}<div class="row"><button class="ghost" data-a="sg" data-v="${k}">${S[k]?'Refaire':'Signer'}</button>${S[k]?`<button class="ghost" data-a="clr" data-v="${k}">Effacer</button>`:''}</div>`).join('')}</section>
 <button class="main" data-a="pdf">Exporter le rapport PDF</button>
 <button class="ghost dng" data-a="rst">Nouvelle tournée (tout effacer)</button>`}
 
