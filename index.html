@@ -170,6 +170,7 @@ const b=e.target.closest('[data-a],[data-t]');if(!b)return;
 if(b.dataset.t){tab=b.dataset.t;render();scrollTo(0,0);return}
 const a=b.dataset.a,n=+b.dataset.n,v=b.dataset.v;
 if(a=='ph')return;
+if(a=='togglePt'){ S.pts[n].open = !(S.pts[n].open ?? false); save(); render(); return; }
 if(a=='ap')S.p.push({});
 else if(a=='dp'){S.p.splice(n,1);if(!S.p.length)S.p.push({})}
 else if(a=='ap2'){
