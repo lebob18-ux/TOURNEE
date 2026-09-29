@@ -71,7 +71,7 @@ nav .on{color:var(--ac);border-top-color:var(--ac)}
 <body>
 <header>
   <h1>Tournée de proximité</h1>
-  <small>Passage post-travaux avec la maintenance · <span id="cnt"></span></small>
+  <!--<small>Passage post-travaux avec la maintenance · <span id="cnt"></span></small>-->
   <button id="inst" class="inst" hidden>Installer l’application</button>
   <div class="track"></div>
 </header>
@@ -85,7 +85,7 @@ nav .on{color:var(--ac);border-top-color:var(--ac)}
 
 <script>
 const $=s=>document.querySelector(s),KEY='tp_v1';
-const CATS=['Caténaire','Fouille / blindage','Voie','Talus / remblai','Déblais / propreté','Signalisation','Clôture / accès','Autre'];
+const CATS=['Caténaire','Fouille / blindage','Voie','Talus / remblai','Déblais / propreté','Signalisation','Clôture / accès','Piste / itinéraire','Autre'];
 const STS={ok:['Conforme','#2ea44f'],wa:['À surveiller','#f0a020'],ko:['Non conforme','#e5484d']};
 const fresh=()=>({i:{date:new Date().toISOString().slice(0,10)},p:[{}],pts:[],c:'',s1:'',s2:''});
 const load=()=>{try{return JSON.parse(localStorage.getItem(KEY))||fresh()}catch(e){return fresh()}};
