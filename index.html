@@ -106,15 +106,32 @@ ${inp('i.travaux','Responsable travaux',i.travaux)}${inp('i.ee','Entreprise(s)',
 ${S.p.map((p,n)=>`<div class="row pr"><input data-k="p.${n}.n" value="${E(p.n)}" placeholder="Nom"><input data-k="p.${n}.s" value="${E(p.s)}" placeholder="Service"><button class="x" data-a="dp" data-n="${n}">✕</button></div>`).join('')}
 <button class="ghost" data-a="ap">+ Ajouter un représentant</button></section>`}
 
-function vPt(p,n){return `<section class="card pt" style="--c:${STS[p.st][1]}">
-<div class="ph"><b>Point ${n+1}</b><button data-a="dpt" data-n="${n}">Supprimer</button></div>
-${inp(`pts.${n}.zone`,'Zone / PK / repère',p.zone)}
-<label class="f"><span>Catégorie</span><select data-k="pts.${n}.cat">${CATS.map(c=>`<option${c==p.cat?' selected':''}>${c}</option>`).join('')}</select></label>
-<div class="seg">${Object.entries(STS).map(([k,[l]])=>`<button class="${p.st==k?'on '+k:k}" data-a="st" data-n="${n}" data-v="${k}">${l}</button>`).join('')}</div>
-${ta(`pts.${n}.desc`,'Constat',p.desc)}${ta(`pts.${n}.act`,'Action à mener',p.act)}
-<div class="row">${inp(`pts.${n}.resp`,'Responsable',p.resp)}${inp(`pts.${n}.ech`,'Échéance',p.ech,'date')}</div>
-${p.ph?`<img class="thumb" src="${p.ph}" alt="Photo du point ${n+1}">`:''}
-<label class="ghost cam">📷 ${p.ph?'Remplacer la photo':'Ajouter une photo'}<input type="file" accept="image/*" hidden data-a="ph" data-n="${n}"></label></section>`}
+function vPt(p,n){
+  // Si la propriété open n'est pas définie, on considère qu'elle est à true par défaut
+  const isOpen = p.open !== false;
+  const [sl, sc] = STS[p.st];
+
+  return `<section class="card pt" style="--c:${sc}">
+<div class="ph" style="cursor:pointer;" data-a="togglePt" data-n="${n}">
+  <div><b>Point ${n+1}</b> <span style="font-size:14px; color:var(--mut); margin-left:8px;">${E(p.zone || 'Sans repère')} (${p.cat})</span></div>
+  <div style="display:flex; align-items:center; gap:8px;">
+    <span style="font-size:12px; padding:2px 8px; border-radius:4px; background:${sc}; color:#111; font-weight:600;">${sl}</span>
+    <button data-a="dpt" data-n="${n}" style="font-size:13px;">Supprimer</button>
+  </div>
+</div>
+${isOpen ? `
+  <div style="margin-top:10px;">
+    ${inp(`pts.${n}.zone`,'Zone / PK / repère',p.zone)}
+    <label class="f"><span>Catégorie</span><select data-k="pts.${n}.cat">${CATS.map(c=>`<option${c==p.cat?' selected':''}>${c}</option>`).join('')}</select></label>
+    <div class="seg">${Object.entries(STS).map(([k,[l]])=>`<button class="${p.st==k?'on '+k:k}" data-a="st" data-n="${n}" data-v="${k}">${l}</button>`).join('')}</div>
+    ${ta(`pts.${n}.desc`,'Constat',p.desc)}${ta(`pts.${n}.act`,'Action à mener',p.act)}
+    <div class="row">${inp(`pts.${n}.resp`,'Responsable',p.resp)}${inp(`pts.${n}.ech`,'Échéance',p.ech,'date')}</div>
+    ${p.ph?`<img class="thumb" src="${p.ph}" alt="Photo du point ${n+1}">`:''}
+    <label class="ghost cam">📷 ${p.ph?'Remplacer la photo':'Ajouter une photo'}<input type="file" accept="image/*" hidden data-a="ph" data-n="${n}"></label>
+  </div>
+` : ''}
+</section>`;
+}
 
 const vPts=()=>(S.pts.length?S.pts.map(vPt).join(''):'<p class="empty">Aucun constat pour l’instant.<br>Appuie sur + pour ajouter le premier point.</p>')+'<button class="fab" data-a="ap2" aria-label="Ajouter un constat">+</button>';
 
@@ -155,13 +172,22 @@ const a=b.dataset.a,n=+b.dataset.n,v=b.dataset.v;
 if(a=='ph')return;
 if(a=='ap')S.p.push({});
 else if(a=='dp'){S.p.splice(n,1);if(!S.p.length)S.p.push({})}
-else if(a=='ap2'){S.pts.push({st:'ok',cat:CATS[0]});save();render();scrollTo(0,document.body.scrollHeight);return}
+else if(a=='ap2'){
+  S.pts.forEach(p=>p.open=false); // Ferme les anciens points
+  S.pts.push({st:'ok',cat:CATS[0],open:true}); // Ouvre le nouveau
+  save();render();scrollTo(0,document.body.scrollHeight);return;
+}
 else if(a=='dpt'){if(!confirm('Supprimer ce constat ?'))return;S.pts.splice(n,1)}
 else if(a=='st')S.pts[n].st=v;
 else if(a=='sg'){openSig(v);return}
 else if(a=='clr')S[v]='';
 else if(a=='rst'){if(!confirm('Tout effacer et démarrer une nouvelle tournée ?'))return;S=fresh();tab='info';scrollTo(0,0)}
 else if(a=='pdf'){pdf();return}
+else if(a=='togglePt'){
+  p.open = !p.open; // Inverse l'état ouvert/fermé
+  save(); render();
+  return;
+}
 save();render()});
 
 document.addEventListener('change',e=>{
