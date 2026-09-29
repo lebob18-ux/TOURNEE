@@ -102,7 +102,7 @@ function vInfo(){const i=S.i;return `<section class="card"><h2>Chantier</h2>
 ${inp('i.chantier','Chantier / opération',i.chantier)}${inp('i.lieu','Ligne / PK / gare',i.lieu)}${inp('i.objet','Nature des travaux',i.objet)}
 <div class="row">${inp('i.date','Date',i.date,'date')}${inp('i.heure','Heure',i.heure,'time')}</div>
 ${inp('i.travaux','Responsable travaux',i.travaux)}${inp('i.ee','Entreprise(s)',i.ee)}</section>
-<section class="card"><h2>Représentants maintenance</h2>
+<section class="card"><h2>Représentants maintenance ou EE</h2>
 ${S.p.map((p,n)=>`<div class="row pr"><input data-k="p.${n}.n" value="${E(p.n)}" placeholder="Nom"><input data-k="p.${n}.s" value="${E(p.s)}" placeholder="Service"><button class="x" data-a="dp" data-n="${n}">✕</button></div>`).join('')}
 <button class="ghost" data-a="ap">+ Ajouter un représentant</button></section>`}
 
